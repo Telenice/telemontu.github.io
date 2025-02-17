@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Availability</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <button class="mode-toggle" id="modeToggle">
+        🌙
+    </button>
+
+    <h2><img src="https://i.imgur.com/nE8yvAs.png" alt="Stock Availability" width="160" height="160"></h2>
+
+    <div class="filter-container">
+        <div>
+            <label for="stockAvailability">Stock Availability:</label>
+            <select class="filter" data-column="stockAvailability" id="stockAvailability">
+                <option value="">All</option>
+                <option value="In Stock">In Stock</option>
+                <option value="Out Of Stock">Out Of Stock</option>
+                <option value="No New Requests">No New Requests</option>
+                <option value="Coming Soon">Coming Soon</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="thc">THC %:</label>
+            <select class="filter" data-column="thc" id="thc">
+                <option value="">All</option>
+                <option value="0-10">0-10</option>
+                <option value="10-20">10-20</option>
+                <option value="20-30">20-30</option>
+                <option value="30+">30+</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="cbd">CBD:</label>
+            <select class="filter" data-column="cbd" id="cbd">
+                <option value="">All</option>
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="table-container">
+        <table id="stockTable">
+            <thead>
+                <tr>
+                    <th>Stock Availability</th>
+                    <th>Product</th>
+                    <th>THC</th>
+                    <th>CBD</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
