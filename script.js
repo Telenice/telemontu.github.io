@@ -66,7 +66,7 @@ window.onload = function () {
                     if (cbdFilter === "Yes") {
                         matchesCbd = stock.cbd >= 1;
                     } else if (cbdFilter === "No") {
-                        matchesCbd = stock.cbd < 1;
+                        matchesCbd = stock.cbd === "N/A";
                     }
             
                     if (matchesStockAvailability && matchesThc && matchesCbd) {
