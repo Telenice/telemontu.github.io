@@ -92,7 +92,10 @@ input[type="text"] {
     width: 100%;
     box-sizing: border-box;
     line-height: 1.5;
-    height: 34px; /* Match typical select element height */
+    height: 32px; /* Adjusted for consistent height across devices */
+    -webkit-appearance: none; /* Remove default mobile styling */
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .filter-container {
@@ -166,5 +169,11 @@ input[type="text"] {
         top: 0;
         background-color: #007bff;
         z-index: 10;
+    }
+
+    select,
+    input[type="text"] {
+        height: 32px; /* Ensure consistent height on mobile */
+        padding: 5px 10px; /* Slightly adjust padding for mobile */
     }
 }
