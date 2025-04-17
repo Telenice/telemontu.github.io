@@ -1,4 +1,33 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row =>
+                    row.some(cell => cell !== '' && cell !== null && cell !== undefined)
+                );
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,6 +47,10 @@
 
     <div class="filter-container">
         <div>
+            <label for="search">Search Product:</label>
+            <input type="text" class="filter" id="search" placeholder="Enter product name...">
+        </div>
+        <div>
             <label for="stockAvailability">Stock Availability:</label>
             <select class="filter" data-column="stockAvailability" id="stockAvailability">
                 <option value="">All</option>
@@ -27,7 +60,6 @@
                 <option value="Coming Soon">Coming Soon</option>
             </select>
         </div>
-
         <div>
             <label for="thc">THC %:</label>
             <select class="filter" data-column="thc" id="thc">
@@ -38,7 +70,6 @@
                 <option value="30+">30+</option>
             </select>
         </div>
-
         <div>
             <label for="cbd">CBD:</label>
             <select class="filter" data-column="cbd" id="cbd">
@@ -47,7 +78,6 @@
                 <option value="Yes">Yes</option>
             </select>
         </div>
-
     </div>
 
     <div class="table-container">

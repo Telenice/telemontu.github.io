@@ -52,6 +52,7 @@ window.onload = function () {
                 const stockAvailabilityFilter = document.querySelector("[data-column='stockAvailability']").value;
                 const thcFilter = document.querySelector("#thc").value;
                 const cbdFilter = document.querySelector("#cbd").value;
+                const searchFilter = document.querySelector("#search").value.toLowerCase();
                 const tableBody = document.querySelector("#stockTable tbody");
                 tableBody.innerHTML = "";
             
@@ -69,7 +70,9 @@ window.onload = function () {
                         matchesCbd = stock.cbd === "N/A";
                     }
             
-                    if (matchesStockAvailability && matchesThc && matchesCbd) {
+                    const matchesSearch = !searchFilter || stock.title.toLowerCase().includes(searchFilter);
+            
+                    if (matchesStockAvailability && matchesThc && matchesCbd && matchesSearch) {
                         let statusClass = "";
                         switch (stock.stockAvailability) {
                             case "In Stock":
@@ -101,7 +104,10 @@ window.onload = function () {
                 });
             }
 
-            document.querySelectorAll(".filter").forEach(select => select.addEventListener("change", renderTable));
+            document.querySelectorAll(".filter").forEach(element => {
+                element.addEventListener("change", renderTable);
+                element.addEventListener("input", renderTable);
+            });
             renderTable();
         })
         .catch(error => console.error("Error fetching product data:", error));
