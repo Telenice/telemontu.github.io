@@ -20,8 +20,7 @@ window.onload = function () {
             const products = data.products;
             const tableBody = document.querySelector("#stockTable tbody");
             let stockData = [];
-            let brands = {};
-            let packSizes = new Set();
+            let productTypes = new Set();
 
             products.forEach(product => {
                 const title = product.title || "Unknown";
@@ -38,17 +37,43 @@ window.onload = function () {
                 }
 
                 const price = product.variants.length > 0 ? parseFloat(product.variants[0].price) : "N/A";
-                const thcMatch = product.body_html.match(/THC (\d+\.?\d*)%/);
+
+                let thc;
+                const thcMatchFromBody = product.body_html.match(/THC (\d+\.?\d*)%/);
+                const thcMatchFromTitle = title.match(/\bT(\d+)\b/i);
+
+                if (thcMatchFromBody) {
+                    thc = parseFloat(thcMatchFromBody[1]);
+                } else if (thcMatchFromTitle) {
+                    thc = parseFloat(thcMatchFromTitle[1]);
+                } else {
+                    thc = "N/A";
+                }
+
                 const cbdMatch = product.body_html.match(/CBD (\d+\.?\d*)%?/);
-                const thc = thcMatch ? parseFloat(thcMatch[1]) : "N/A";
                 const cbd = cbdMatch ? parseFloat(cbdMatch[1]) : "N/A";
+                const product_type = product.product_type || "Unknown";
+                
+                if (product_type && product_type !== "Unknown") {
+                    productTypes.add(product_type);
+                }
                 
                 stockData.push({
-                    stockAvailability, title, thc, cbd, price
+                    stockAvailability, title, thc, cbd, price, product_type
                 });
             });
 
+            const productTypeFilterEl = document.querySelector("#productType");
+            productTypes.forEach(type => {
+                const option = document.createElement("option");
+                option.value = type;
+                option.textContent = type;
+                productTypeFilterEl.appendChild(option);
+            });
+
+
             function renderTable() {
+                const productTypeFilter = document.querySelector("#productType").value;
                 const stockAvailabilityFilter = document.querySelector("[data-column='stockAvailability']").value;
                 const thcFilter = document.querySelector("#thc").value;
                 const cbdFilter = document.querySelector("#cbd").value;
@@ -57,6 +82,7 @@ window.onload = function () {
                 tableBody.innerHTML = "";
             
                 stockData.forEach(stock => {
+                    const matchesProductType = !productTypeFilter || stock.product_type === productTypeFilter;
                     const matchesStockAvailability = !stockAvailabilityFilter || stock.stockAvailability === stockAvailabilityFilter;
                     const matchesThc = !thcFilter || (thcFilter === "0-10" && stock.thc >= 0 && stock.thc <= 10) ||
                                        (thcFilter === "10-20" && stock.thc > 10 && stock.thc <= 20) ||
@@ -72,7 +98,7 @@ window.onload = function () {
             
                     const matchesSearch = !searchFilter || stock.title.toLowerCase().includes(searchFilter);
             
-                    if (matchesStockAvailability && matchesThc && matchesCbd && matchesSearch) {
+                    if (matchesProductType && matchesStockAvailability && matchesThc && matchesCbd && matchesSearch) {
                         let statusClass = "";
                         switch (stock.stockAvailability) {
                             case "In Stock":
@@ -93,7 +119,7 @@ window.onload = function () {
                         }
             
                         let row = `<tr>
-                            <td class="status-cell ${statusClass}">${stock.stockAvailability}</td>
+                            <td class="status-cell ${statusClass}"><span>${stock.stockAvailability}</span></td>
                             <td>${stock.title}</td>
                             <td>${stock.thc}</td>
                             <td>${stock.cbd}</td>
