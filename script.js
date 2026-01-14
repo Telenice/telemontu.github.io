@@ -71,6 +71,44 @@ window.onload = function () {
                 productTypeFilterEl.appendChild(option);
             });
 
+            let currentSortColumn = null;
+            let currentSortDirection = 'asc';
+
+            function sortData(column) {
+                if (currentSortColumn === column) {
+                    currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSortColumn = column;
+                    currentSortDirection = 'asc';
+                }
+
+                document.querySelectorAll('th.sortable').forEach(th => {
+                    th.classList.remove('sort-asc', 'sort-desc');
+                    if (th.dataset.sort === column) {
+                        th.classList.add(currentSortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+                    }
+                });
+
+                stockData.sort((a, b) => {
+                    let valA = a[column];
+                    let valB = b[column];
+
+                    if (valA === "N/A" && valB !== "N/A") return 1;
+                    if (valA !== "N/A" && valB === "N/A") return -1;
+                    if (valA === "N/A" && valB === "N/A") return 0;
+                    if (valA < valB) return currentSortDirection === 'asc' ? -1 : 1;
+                    if (valA > valB) return currentSortDirection === 'asc' ? 1 : -1;
+                    return 0;
+                });
+
+                renderTable();
+            }
+
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.addEventListener('click', () => {
+                    sortData(th.dataset.sort);
+                });
+            });
 
             function renderTable() {
                 const productTypeFilter = document.querySelector("#productType").value;
@@ -123,7 +161,7 @@ window.onload = function () {
                             <td>${stock.title}</td>
                             <td>${stock.thc}</td>
                             <td>${stock.cbd}</td>
-                            <td>£${stock.price !== "N/A" ? stock.price.toFixed(2) : "N/A"}</td>
+                            <td>${stock.price !== "N/A" ? "£" + stock.price.toFixed(2) : "N/A"}</td>
                         </tr>`;
                         tableBody.innerHTML += row;
                     }
